@@ -31,9 +31,10 @@ from rest_framework.generics import GenericAPIView
 #         # return JsonResponse({'code': 0, 'books': serializer.data})
 #         return Response(data=province_list, status=status.HTTP_200_OK)
 
-class OneDepartmentModelViewSet(GenericAPIView):
+class OneDepartmentGenericAPIView(GenericAPIView):
     queryset = Department.objects.all()
     serializer_class = OneDepartmentSerializer
+
     def get(self, request):
         # 查看所有部门
         departments = Department.objects.all()
@@ -51,7 +52,7 @@ class OneDepartmentModelViewSet(GenericAPIView):
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
-class TwoDepartmentModelViewSet(GenericAPIView):
+class TwoDepartmentGenericAPIView(GenericAPIView):
     queryset = Department.objects.all()
     serializer_class = OneDepartmentSerializer
 

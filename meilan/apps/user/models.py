@@ -23,7 +23,7 @@ class User(AbstractUser):
     gender = models.SmallIntegerField(verbose_name='性别', choices=gender_choices, default=1)
     # is_superuser = models.SmallIntegerField(verbose_name='是否是管理员', choices=superuser_choices, default=0)
     date_joined = models.DateTimeField(verbose_name='入职日期')
-    one_department = models.ForeignKey(verbose_name='一级部门', to=Department, on_delete=models.PROTECT, default='')
+    one_department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.PROTECT, default='')
     # two_department = models.ForeignKey(verbose_name='二级部门', to=Department, on_delete=models.PROTECT, default='')
     # three_department = models.ForeignKey(verbose_name='三级部门', to=Department, on_delete=models.PROTECT, default='')
     # four_department = models.ForeignKey(verbose_name='四级部门', to=Department, on_delete=models.PROTECT, default='')

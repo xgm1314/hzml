@@ -22,14 +22,15 @@ class User(AbstractUser):
     # password = models.CharField(verbose_name='密码', max_length=32)
     gender = models.SmallIntegerField(verbose_name='性别', choices=gender_choices, default=1)
     # is_superuser = models.SmallIntegerField(verbose_name='是否是管理员', choices=superuser_choices, default=0)
-    date_joined = models.DateTimeField(verbose_name='入职日期')
-    one_department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.PROTECT, default='')
+    date_joined = models.DateTimeField(verbose_name='入职日期', null=True)
+    one_department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.PROTECT, default='',
+                                       null=True)
     # two_department = models.ForeignKey(verbose_name='二级部门', to=Department, on_delete=models.PROTECT, default='')
     # three_department = models.ForeignKey(verbose_name='三级部门', to=Department, on_delete=models.PROTECT, default='')
     # four_department = models.ForeignKey(verbose_name='四级部门', to=Department, on_delete=models.PROTECT, default='')
     position = models.CharField(verbose_name='职位', max_length=10)
     mobile = models.CharField(verbose_name='手机号', max_length=11, unique=True)
-    birthday = models.DateTimeField(verbose_name='出生日期')
+    birthday = models.DateTimeField(verbose_name='出生日期', null=True)
     image = models.ImageField(verbose_name='头像', null=True, blank=True)
 
     class Meta:

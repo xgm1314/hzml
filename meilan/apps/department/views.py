@@ -10,6 +10,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from utils.page import PageNum
+
+# from rest_framework.pagination import PageNumberPagination
 
 
 # Create your views here.
@@ -31,13 +35,24 @@ from rest_framework.generics import GenericAPIView
 #         # return JsonResponse({'code': 0, 'books': serializer.data})
 #         return Response(data=province_list, status=status.HTTP_200_OK)
 
+
 class OneDepartmentGenericAPIView(GenericAPIView):
+    pagination_class = PageNum
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Department.objects.all()
     serializer_class = OneDepartmentSerializer
 
     def get(self, request):
         # 查看所有部门
-        departments = Department.objects.all()
+        departments = self.get_queryset()
+        project_qs = self.filter_queryset(departments)
+        # print(project_qs)
+        page = self.paginate_queryset(project_qs)
+        # print(page)
+        if page:
+            serializer_obj = self.get_serializer(instance=page, many=True)
+            return self.get_paginated_response(serializer_obj.data)
+
         serializer = OneDepartmentSerializer(instance=departments, many=True)
         # return JsonResponse({'code': 0, 'errmsg': serializer.data})
         return Response(data=serializer.data, status=status.HTTP_200_OK)

@@ -8,6 +8,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
+# from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from utils.page import PageNum
 
 """
 class UsersModelViewSet(ModelViewSet):
@@ -20,9 +22,18 @@ class UsersGenericAPIView(GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    pagination_class = PageNum
+
     def get(self, request):
         # 查看所有员工
         user = self.get_queryset()
+        project_qs = self.filter_queryset(user)
+        # print(project_qs)
+        page = self.paginate_queryset(project_qs)
+        # print(page)
+        if page:
+            serializer_obj = self.get_serializer(instance=page, many=True)
+            return self.get_paginated_response(serializer_obj.data)
         serializer = self.serializer_class(instance=user, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -36,6 +47,7 @@ class UsersGenericAPIView(GenericAPIView):
 
 
 class UsersDetailGenericAPIView(GenericAPIView):
+    # pagination_class = PageNum
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
     lookup_field = 'pk'

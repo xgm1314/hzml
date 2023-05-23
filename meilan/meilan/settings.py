@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+import utils.page
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -135,7 +137,7 @@ USE_TZ = False
 STATIC_URL = 'static/'
 
 # BASE_DIR 是项目的绝对地址
-MEDIA_ROOT = os.path.join(BASE_DIR, 'collect_static/img/')                            # 用户传入的路径,项目文件夹的下一层目录
+MEDIA_ROOT = os.path.join(BASE_DIR, 'collect_static/img/')  # 用户传入的路径,项目文件夹的下一层目录
 MEDIA_URL = '/collect_static/'
 
 # Default primary key field type
@@ -145,3 +147,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 替换django自带的User模型
 AUTH_USER_MODEL = 'user.User'
+
+REST_FRAMEWORK = {  # 在setting中设置的权限不起作用
+
+    'DEFAULT_PERMISSION_CLASSES': [
+
+        # 一、默认用户对所有的业务都有操作权限，即没有权限限制（未指明时默认的权限）
+        # 'rest_framework.permissions.AllowAny',
+
+        # 二、仅通过认证的用户才可以访问项目中的接口
+        'rest_framework.permissions.IsAuthenticated',
+
+        # 三、仅管理员用户（可以通过admin创建一个用户进行测试）
+        # 'rest_framework.permissions.IsAdminUser',
+
+        # 四、未认证的用户只有查权限，经过认证的用户才有增删改的权限
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [  # 认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'utils.page.PageNum',
+    'PAGE_SIZE': 10
+}

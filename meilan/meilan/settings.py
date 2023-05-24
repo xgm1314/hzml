@@ -40,13 +40,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.user',
     'apps.department',
+    'apps.verifications',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -170,4 +171,20 @@ REST_FRAMEWORK = {  # 在setting中设置的权限不起作用
     ],
     'DEFAULT_PAGINATION_CLASS': 'utils.page.PageNum',
     'PAGE_SIZE': 10
+}
+CACHES = {
+    "default": {  # redis数据库的0号库作为预留，cache配置的缓存
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "code": {  # 短信验证码信息保存到redis数据库的1号库
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }

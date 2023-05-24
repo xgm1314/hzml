@@ -7,15 +7,17 @@ import requests
 from rest_framework import serializers
 from apps.user.models import User
 import re
+from django.http import JsonResponse
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(max_length=32, write_only=True)
+    code = serializers.CharField(max_length=4, min_length=4, label='验证码', write_only=True, required=True)
+    password2 = serializers.CharField(max_length=32, write_only=True, label='确认密码')
 
     class Meta:
         model = User
         fields = ['id', 'password', 'password2', 'is_superuser', 'username', 'email', 'gender', 'date_joined',
-                  'position', 'mobile', 'birthday', 'image', 'one_department']
+                  'position', 'mobile', 'code', 'birthday', 'image', 'one_department']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -30,6 +32,9 @@ class UserSerializer(serializers.ModelSerializer):
             'position': {
                 'max_length': 10,
                 'min_length': 2
+            },
+            'email': {
+                'required': True
             }
         }
 
@@ -56,26 +61,45 @@ class UserSerializer(serializers.ModelSerializer):
         email = User.objects.filter(email=value)
 
         if email:
-            raise ValueError('邮箱已存在')
+            # raise ValueError('邮箱已存在')
+            return JsonResponse({'errmsg': '邮箱已注册'})
 
         if not result:
-            raise ValueError('邮箱格式不正确')
-
+            # raise ValueError('邮箱格式不正确')
+            return JsonResponse({'errmsg': '邮箱格式不正确'})
         return value
 
     def validate(self, attrs):
         # if self.validate_mobile(value=attrs.get('username')):
         #     print(1)
+
+        # 短信验证码校验
+        code = attrs.get('code')
+        mobile = attrs.get('mobile')
+        # print(code)
+        from django_redis import get_redis_connection
+        redis_conn = get_redis_connection('code')  # 连接数据库
+        sms_code_server = redis_conn.get('sms_%s' % mobile)
+        if not sms_code_server:
+            # return JsonResponse({'code': 400, 'errmsg': '短信验证码不存在'})
+            raise ValueError('短信验证码不存在')
+        if code != sms_code_server.decode():
+            # return JsonResponse({'code': 400, 'errmsg': '短信验证码有误'})
+            raise ValueError('短信验证码有误')
+
+        # 验证密码
         password = attrs.get('password')
         password2 = attrs.get('password2')
         if password == password2:
-            attrs.pop('password2')
+            attrs.pop('password2')  # 删除不入库的数据
+            attrs.pop('code')
+            # print(attrs)
             return attrs
         else:
             raise ValueError('两次密码不一致')
 
     def create(self, validated_data):
-
+        # validated_data.pop('code')
         return User.objects.create_user(**validated_data)
 
 
@@ -125,10 +149,12 @@ class UserDetailSerializer(UserSerializer):
         if user != user_email:
             # print(email)
             if email:
-                raise ValueError('邮箱已存在')
+                # raise ValueError('邮箱已存在')
+                return JsonResponse({'errmsg': '邮箱已注册'})
 
         if not result:
-            raise ValueError('邮箱格式不正确')
+            # raise ValueError('邮箱格式不正确')
+            return JsonResponse({'errmsg': '邮箱格式不正确'})
 
         return value
 
@@ -138,6 +164,14 @@ class UserDetailSerializer(UserSerializer):
             password = validated_data.pop('password', None)
             instance.set_password(password)
         return super().update(instance, validated_data)
+
+
+class LoginModelSerializer(serializers.ModelSerializer):
+    remembered = serializers.BooleanField(label='是否记住登录', required=False, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'remembered']
 
 
 """

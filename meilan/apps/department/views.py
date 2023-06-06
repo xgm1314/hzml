@@ -1,5 +1,6 @@
 import json
 
+import django_filters
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
@@ -10,8 +11,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from utils.page import PageNum
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,AllowAny
+from utils.page import PageNum,LimitNum
+
 
 # from rest_framework.pagination import PageNumberPagination
 
@@ -37,13 +39,21 @@ from utils.page import PageNum
 
 
 class OneDepartmentGenericAPIView(GenericAPIView):
-    pagination_class = PageNum
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Department.objects.all()
+    # pagination_class = PageNum
+    pagination_class = LimitNum
+    permission_classes = [AllowAny]
+    queryset = Department.objects.all().order_by('id')
     serializer_class = OneDepartmentSerializer
 
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]  # django_filter过滤器
+    filterset_fields = ['name', 'id']  # django_filter过滤器
+
+    # from rest_framework.filters import OrderingFilter
+    # filter_backends = [OrderingFilter]  # django_filter排序
+    # ordering_fields = ['name', 'id']  # django_filter排序
+
     def get(self, request):
-        # 查看所有部门
+        """查看所有部门"""
         departments = self.get_queryset()
         project_qs = self.filter_queryset(departments)
         # print(project_qs)
@@ -58,7 +68,7 @@ class OneDepartmentGenericAPIView(GenericAPIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        # 添加部门
+        """添加部门"""
         data = request.data
         serializer = OneDepartmentSerializer(data=data)
         serializer.is_valid(raise_exception=True)

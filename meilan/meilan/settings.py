@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    'rest_framework',  # drf框架
+    'django_filters',  # drf过滤器
+    'drf_yasg',  # API生成器
+    'rest_framework_swagger',
     'apps.user',
     'apps.department',
     'apps.verifications',
@@ -150,6 +153,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {  # 在setting中设置的权限不起作用
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    # 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 
     'DEFAULT_PERMISSION_CLASSES': [
 
@@ -165,13 +170,34 @@ REST_FRAMEWORK = {  # 在setting中设置的权限不起作用
         # 四、未认证的用户只有查权限，经过认证的用户才有增删改的权限
         # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
 
+        # 自定义权限
+        'utils.userpermission.UserPermission',
+
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [  # 认证
         'rest_framework.authentication.SessionAuthentication',  # session认证
     ],
+    # 分页
     'DEFAULT_PAGINATION_CLASS': 'utils.page.PageNum',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_THROTTLE_CLASSES': [  # 限流配置
+        'rest_framework.throttling.AnonRateThrottle',  # 匿名用户
+        'rest_framework.throttling.UserRateThrottle',  # 登录用户
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {  # 限流频次
+        'a': '2/min',
+        'anon': '2/day',  # 匿名频次
+        'user': '4/day',  # 登录用户频次
+    },
+
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],  # 指定过滤后端
+    'EXCEPTION_HANDLER': 'utils.exceptions.exception_handler',  # 修改异常捕获函数
+
 }
+
+# redis
 CACHES = {
     "default": {  # redis数据库的0号库作为预留，cache配置的缓存
         "BACKEND": "django_redis.cache.RedisCache",
@@ -186,5 +212,48 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
+    }
+}
+
+# 日志
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
+    'formatters': {  # 日志信息显示的格式
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
+        },
+    },
+    'filters': {  # 对日志进行过滤
+        'require_debug_true': {  # django在debug模式下才输出日志
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {  # 日志处理方法
+        'console': {  # 向终端中输出日志
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {  # 向文件中输出日志
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/meilan.log'),  # 日志文件的位置
+            'maxBytes': 300 * 1024 * 1024,  # 单个日志的大小
+            'backupCount': 10,  # 备份日志的数量
+            'encoding': 'utf8',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {  # 日志器
+        'django': {  # 定义了一个名为django的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'INFO',  # 日志器接收的最低日志级别
+        },
     }
 }

@@ -6,8 +6,8 @@
 from django.contrib import admin
 from django.urls import path
 
-# from apps.user.views import UsersModelViewSet
-from apps.user.views import UsersGenericAPIView, UsersDetailGenericAPIView, LoginGenericAPIView,LogoutGenericAPIView
+from apps.user.views import UsersModelViewSet
+from apps.user.views import UsersGenericAPIView, UsersDetailGenericAPIView, LoginGenericAPIView, LogoutGenericAPIView
 
 urlpatterns = [
     path('users/', UsersGenericAPIView.as_view()),
@@ -15,8 +15,8 @@ urlpatterns = [
     path('login/', LoginGenericAPIView.as_view()),
     path('logout/', LogoutGenericAPIView.as_view()),
 ]
-# from rest_framework.routers import SimpleRouter
-#
-# router = SimpleRouter()
-# router.register(prefix='users', viewset=UsersModelViewSet, basename='users')
-# urlpatterns += router.urls
+from rest_framework.routers import SimpleRouter, DefaultRouter
+
+router = SimpleRouter()
+router.register(prefix='user', viewset=UsersModelViewSet, basename='users')
+urlpatterns += router.urls

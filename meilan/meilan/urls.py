@@ -54,13 +54,14 @@ urlpatterns = [
     path('doc/', include_docs_urls(title='美蓝',description='')),
     path('docs/', get_swagger_view(title='美蓝')),
 
-    path('swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    # path('swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     path('', include('apps.department.urls')),
     path('', include('apps.user.urls')),
     path('', include('apps.verifications.urls')),
+    path('', include('apps.examine.urls')),
     # path('openapi/', get_schema_view(title="ml"), name='openapi-schema'),
 
 ]

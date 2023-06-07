@@ -154,8 +154,8 @@ class UsersGenericAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
     def get(self, request):
         # 查看所有员工
 
-        # from django.db import DatabaseError
-        # raise DatabaseError('数据库异常')  # 抛异常测试,未成功
+        from django.db import DatabaseError
+        raise DatabaseError('数据库异常')  # 抛异常测试,未成功
 
         user = self.get_queryset()
         project_qs = self.filter_queryset(user)

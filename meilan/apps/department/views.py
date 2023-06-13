@@ -39,8 +39,8 @@ from utils.page import PageNum,LimitNum
 
 
 class OneDepartmentGenericAPIView(GenericAPIView):
-    # pagination_class = PageNum
-    pagination_class = LimitNum
+    pagination_class = PageNum
+    # pagination_class = LimitNum
     permission_classes = [AllowAny]
     queryset = Department.objects.all().order_by('id')
     serializer_class = OneDepartmentSerializer
@@ -82,6 +82,7 @@ class TwoDepartmentGenericAPIView(GenericAPIView):
     serializer_class = OneDepartmentSerializer
 
     def get(self, request, pk):
+        """ 查看一个部门 """
         two_department = self.get_object()
         serializer = self.serializer_class(instance=two_department)
         serializer_data = serializer.data
@@ -100,6 +101,7 @@ class TwoDepartmentGenericAPIView(GenericAPIView):
         return Response(data=data_list, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
+        """ 修改部门 """
         two_department = self.get_object()
         data = request.data
         serializer = OneDepartmentSerializer(instance=two_department, data=data)
@@ -109,6 +111,7 @@ class TwoDepartmentGenericAPIView(GenericAPIView):
         return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def delete(self, request, pk):
+        """ 删除部门 """
         two_department = self.get_object()
         two_department.delete()
         # return JsonResponse({'code': 204, 'errmsg': 'ok'})

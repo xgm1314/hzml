@@ -31,6 +31,19 @@ from django.views import View
 
 
 class UsersModelViewSet(ModelViewSet):
+    # 员工视图
+    """
+    list:
+    查看所有员工
+    create:
+    新建员工
+    read:
+    查看单个员工
+    update:
+    修改员工
+    delete:
+    删除员工
+    """
     # queryset = User.objects.all()
     queryset = User.objects.all().order_by('id')
     serializer_class = UserSerializerRoot
@@ -152,10 +165,10 @@ class UsersGenericAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
     #         return UserSerializerOrdinary
 
     def get(self, request):
-        # 查看所有员工
+        """查看所有员工"""
 
-        from django.db import DatabaseError
-        raise DatabaseError('数据库异常')  # 抛异常测试,未成功
+        # from django.db import DatabaseError
+        # raise DatabaseError('数据库异常')  # 抛异常测试,未成功
 
         user = self.get_queryset()
         project_qs = self.filter_queryset(user)
@@ -172,7 +185,7 @@ class UsersGenericAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        # 添加员工
+        """ 添加员工 """
         """
         {
         "password":123456,
@@ -221,11 +234,13 @@ class UsersDetailGenericAPIView(RetrieveModelMixin, UpdateModelMixin, DestroyMod
     lookup_field = 'pk'
 
     def get(self, request, pk):
+        """查看一个员工"""
         user = self.get_object()
         serializer = self.serializer_class(instance=user)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
+        """修改员工"""
         user_dict = self.get_object()
         data = request.data
 
@@ -235,6 +250,7 @@ class UsersDetailGenericAPIView(RetrieveModelMixin, UpdateModelMixin, DestroyMod
         return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def delete(self, request, pk):
+        """删除员工"""
         user = self.get_object()
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

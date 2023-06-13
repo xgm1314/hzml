@@ -5,14 +5,14 @@
 # @Project : meilan
 from django.contrib import admin
 from django.urls import path
-from apps.department.views import OneDepartmentGenericAPIView
-from apps.department.views import TwoDepartmentGenericAPIView
-from rest_framework.routers import SimpleRouter
+from apps.examine.views import ExamineModelViewSet, OverTimeViewSet
+
+from rest_framework.routers import SimpleRouter, DefaultRouter
 
 urlpatterns = [
-    path('department/', OneDepartmentGenericAPIView.as_view()),
-    path('department/<pk>/', TwoDepartmentGenericAPIView.as_view())
+
 ]
-# router = SimpleRouter()
-# router.register(prefix='department', viewset=OneDepartmentModelViewSet, basename='department')
-# urlpatterns += router.urls
+router = DefaultRouter()
+router.register(prefix='examines', viewset=ExamineModelViewSet, basename='examines')
+router.register(prefix='overtime', viewset=OverTimeViewSet, basename='overtime')
+urlpatterns += router.urls

@@ -75,10 +75,11 @@ if __name__ == '__main__':
 # Create your models here.
 class Examine(models.Model):
     """ 审批表 """
-    department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.SET_DEFAULT, null=True,
-                                   blank=True, default='', related_name='+', help_text='部门')
-    one_examine = models.ForeignKey(verbose_name='一级审批', to=User, on_delete=models.SET_NULL, null=True, blank=True,
-                                    related_name='+', help_text='一级审批')
+    department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.CASCADE, related_name='+',
+                                   help_text='部门')
+    one_examine = models.ForeignKey(verbose_name='一级审批', to=User, on_delete=models.CASCADE,
+                                    related_name='+',
+                                    help_text='一级审批')
     two_examine = models.ForeignKey(verbose_name='二级审批', to=User, on_delete=models.SET_NULL, null=True, blank=True,
                                     related_name='+', help_text='二级审批')
     three_examine = models.ForeignKey(verbose_name='三级审批', to=User, on_delete=models.SET_NULL, null=True, blank=True,
@@ -110,16 +111,18 @@ class Examine(models.Model):
 class OverTime(models.Model):
     """ 加班表 """
     examine_id = models.BigIntegerField(verbose_name='审批编号', primary_key=True, unique=True, help_text='审批编号')
+    name = models.ForeignKey(verbose_name='提交人', to=User, related_name='name', on_delete=models.CASCADE,
+                             help_text='提交人', null=True, blank=True)
     data = models.DateTimeField(verbose_name='提交时间', help_text='提交时间')
-    department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.SET_DEFAULT, default='美蓝',
-                                   help_text='部门')
+    department = models.ForeignKey(verbose_name='部门', to=Department, on_delete=models.CASCADE, help_text='部门')
     reason = models.CharField(verbose_name='事由', max_length=32, help_text='事由')
     start_data = models.DateTimeField(verbose_name='开始时间', help_text='开始时间')
     end_data = models.DateTimeField(verbose_name='结束时间', help_text='结束时间')
     duration = models.CharField(verbose_name='时长', max_length=16, help_text='时长')
-    examines = models.ForeignKey(verbose_name='审批数据', to=Examine, on_delete=models.SET_DEFAULT, default='',
+    examines = models.ForeignKey(verbose_name='审批数据', to=Examine, on_delete=models.CASCADE, default='',
                                  help_text='审批流程')
     is_delete = models.BooleanField(verbose_name='逻辑删除', default=False)
+    _data = models.DateTimeField(verbose_name='提交日期', help_text='提交日期')
 
     class Meta:
         db_table = 'tb_overtime'

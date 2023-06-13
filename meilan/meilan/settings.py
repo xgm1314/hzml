@@ -188,7 +188,7 @@ REST_FRAMEWORK = {  # 在setting中设置的权限不起作用
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {  # 限流频次
-        'a': '2/min',
+        'a': '2/minute',
         'anon': '2/day',  # 匿名频次
         'user': '4/day',  # 登录用户频次
     },
@@ -258,3 +258,26 @@ LOGGING = {
         },
     }
 }
+# # swagger 配置项
+# SWAGGER_SETTINGS = {
+#     # 基础样式
+#     'SECURITY_DEFINITIONS': {
+#         "basic": {
+#             'type': 'basic'
+#         }
+#     },
+#     # 如果需要登录才能够查看接口文档, 登录的链接使用restframework自带的.
+#     # 'LOGIN_URL': 'rest_framework:login',
+#     # 'LOGOUT_URL': 'rest_framework:logout',
+#     # 'DOC_EXPANSION': None,
+#     # 'SHOW_REQUEST_HEADERS':True,
+#     # 'USE_SESSION_AUTH': True,
+#     # 'DOC_EXPANSION': 'list',
+#     # 接口文档中方法列表以首字母升序排列
+#     'APIS_SORTER': 'alpha',
+#     # 如果支持json提交, 则接口文档中包含json输入框
+#     'JSON_EDITOR': True,
+#     # 方法列表字母排序
+#     'OPERATIONS_SORTER': 'alpha',
+#     'VALIDATOR_URL': None,
+# }

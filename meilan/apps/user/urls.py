@@ -17,6 +17,6 @@ urlpatterns = [
 ]
 from rest_framework.routers import SimpleRouter, DefaultRouter
 
-router = SimpleRouter()
+router = DefaultRouter()
 router.register(prefix='user', viewset=UsersModelViewSet, basename='users')
 urlpatterns += router.urls

@@ -14,7 +14,7 @@ class UserSerializerRoot(serializers.ModelSerializer):
     code = serializers.CharField(max_length=4, min_length=4, label='验证码', write_only=True, required=True,
                                  help_text='短信验证码')
     password2 = serializers.CharField(max_length=32, write_only=True, label='确认密码', help_text='确认密码')
-    one_department = serializers.StringRelatedField(label='部门', required=False)  # 关联字段显示关联的内容，而不是关联的值
+    # one_department = serializers.StringRelatedField(label='部门', required=False)  # 关联字段显示关联的内容，而不是关联的值
 
     class Meta:
         model = User
